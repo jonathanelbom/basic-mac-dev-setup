@@ -1,6 +1,6 @@
-# uxd-mac-set-up
+# basic-mac-dev-setup
 
-Scripts for setting up a new Mac with Claude Code.
+Scripts for setting up a your Mac with Hoembrew, Node, VS Code, GH CLI, and Claude Code.
 
 If you don't have a Claude.ai account, you'll need an Anthropic API key. Get one at [console.anthropic.com](https://console.anthropic.com/).
 
