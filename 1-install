@@ -1,0 +1,57 @@
+#!/bin/bash
+set -euo pipefail
+
+trap 'echo "Script interrupted. Exiting..."; exit 130' INT
+
+# Install Homebrew
+if command -v brew &>/dev/null; then
+    echo "Homebrew already installed, skipping"
+else
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Add Homebrew to PATH permanently (if not already present) and activate it now
+if ! grep -q 'eval "$(/opt/homebrew/bin/brew shellenv)"' ~/.zprofile 2>/dev/null; then
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+fi
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Install packages
+for pkg in node yarn gh; do
+    if brew list "$pkg" &>/dev/null; then
+        echo "$pkg already installed, skipping"
+    else
+        brew install "$pkg"
+    fi
+done
+
+# Install Claude apps
+for cask in claude claude-code; do
+    if brew list --cask "$cask" &>/dev/null; then
+        echo "$cask already installed, skipping"
+    else
+        brew install --cask "$cask"
+    fi
+done
+
+# Install VS Code
+if brew list --cask visual-studio-code &>/dev/null; then
+    echo "visual-studio-code already installed, skipping"
+else
+    brew install --cask visual-studio-code
+fi
+
+# Install VS Code extensions
+EXTENSIONS=(
+    "anthropic.claude-code"
+    "yzhang.markdown-all-in-one"
+    "esbenp.prettier-vscode"
+)
+
+for ext in "${EXTENSIONS[@]}"; do
+    echo "Installing $ext..."
+    code --install-extension "$ext" --force
+done
+
+echo ""
+echo "Installation complete! Open a new terminal window, then run 'claude' to finish setup."
